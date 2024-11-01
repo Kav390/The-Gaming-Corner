@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Dice Roller Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #gameContainer {
+            display: none;
+        }
+        #instructions {
+            border: 2px solid black;
+            padding: 20px;
+            border-radius: 10px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        #dice {
+            width: 100px;
+            height: 100px;
+            background-color: white;
+            border: 2px solid black;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 48px;
+            font-weight: bold;
+            margin: 20px auto;
+            transition: transform 1s;
+        }
+        #result {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+        #playAgain {
+            display: none;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lucky Dice Roller Game</h1>
+    
+    <div id="instructions">
+        <p>Welcome to the Lucky Dice Roller Game!</p>
+        <p>To play, you will bet tokens and guess the outcome of the dice roll (1-6).</p>
+        <p>Click "Continue" to start playing!</p>
+        <button onclick="startGame()">Continue</button>
+    </div>
+    
+    <div id="gameContainer">
+        <p>Tokens: <span id="tokens">100</span></p>
+        <label for="betAmount">Bet Amount:</label>
+        <input type="number" id="betAmount" min="1" value="1">
+        <br><br>
+        <label for="guess">Guess (1-6):</label>
+        <input type="number" id="guess" min="1" max="6">
+        <br><br>
+        <button onclick="rollDice()">Roll Dice!</button>
+        
+        <div id="dice">?</div>
+        <div id="result"></div>
+        <button id="playAgain" onclick="resetGame()">Wanna Play Again?</button>
+    </div>
+
+    <script>
+        let tokens = 100;
+        const tokensDisplay = document.getElementById('tokens');
+        const resultDisplay = document.getElementById('result');
+        const gameContainer = document.getElementById('gameContainer');
+        const playAgainButton = document.getElementById('playAgain');
+        const dice = document.getElementById('dice');
+
+        function startGame() {
+            tokensDisplay.textContent = tokens;
+            document.getElementById('instructions').style.display = 'none';
+            gameContainer.style.display = 'block';
+        }
+
+        function rollDice() {
+            const betAmount = parseInt(document.getElementById('betAmount').value);
+            const guess = parseInt(document.getElementById('guess').value);
+
+            if (isNaN(betAmount) || betAmount < 1 || betAmount > tokens) {
+                alert("Please enter a valid bet amount (1-" + tokens + ").");
+                return;
+            }
+            if (isNaN(guess) || guess < 1 || guess > 6) {
+                alert("Please enter a valid guess (1-6).");
+                return;
+            }
+
+            // Start rolling animation
+            dice.style.transform = "rotate(360deg)";
+
+            setTimeout(() => {
+                // Simulate dice roll
+                const diceResult = Math.floor(Math.random() * 6) + 1;
+                dice.textContent = diceResult; // Show the result on the dice
+                dice.style.transform = "rotate(0deg)"; // Reset rotation
+
+                if (guess === diceResult) {
+                    tokens += betAmount * 2; // Win double the bet amount
+                    resultDisplay.textContent = `You won! The dice rolled a ${diceResult}. You gained ${betAmount * 2} tokens.`;
+                } else {
+                    tokens -= betAmount; // Lose the bet amount
+                    resultDisplay.textContent = `You lost! The dice rolled a ${diceResult}. You lost ${betAmount} tokens.`;
+                }
+
+                tokensDisplay.textContent = tokens;
+
+                if (tokens <= 0) {
+                    tokensDisplay.textContent = 0;
+                    resultDisplay.textContent = "You're out of tokens!";
+                    playAgainButton.style.display = 'block';
+                }
+            }, 1000); // Wait for animation to complete
+        }
+
+        function resetGame() {
+            tokens = 100;
+            tokensDisplay.textContent = tokens;
+            resultDisplay.textContent = '';
+            playAgainButton.style.display = 'none';
+            dice.textContent = '?'; // Reset dice display
+        }
+    </script>
+</body>
+</html>
